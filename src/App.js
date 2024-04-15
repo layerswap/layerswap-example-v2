@@ -20,7 +20,7 @@ function App() {
   const handleDeposit = async () => {
     setShowWidget(true);
     try {
-      const response = await fetch('https://api-dev.layerswap.cloud/api/v2-alpha/limits?source_network=ARBITRUM_MAINNET&source_token=USDC.e&destination_network=ARBITRUM_MAINNET&destination_token=ETH&use_deposit_address=true&refuel=false', {
+      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/limits?source_network=ARBITRUM_MAINNET&source_token=USDC.e&destination_network=ARBITRUM_MAINNET&destination_token=ETH&use_deposit_address=true&refuel=false', {
       method: 'GET',
           headers: {
           'Content-Type': 'application/json',
