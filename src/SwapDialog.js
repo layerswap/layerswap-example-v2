@@ -2,7 +2,6 @@ import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 export default function SwapDialog({ open, toggleOpen, address, depositActions }) {
-    console.log(depositActions, "depositActionsdepositActions")
     return (
         <Transition.Root show={open} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={toggleOpen}>
