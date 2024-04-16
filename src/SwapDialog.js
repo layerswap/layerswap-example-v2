@@ -1,7 +1,8 @@
 import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-export default function SwapDialog({ open, toggleOpen, address }) {
+export default function SwapDialog({ open, toggleOpen, address, depositActions }) {
+    console.log(depositActions, "depositActionsdepositActions")
     return (
         <Transition.Root show={open} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={toggleOpen}>
@@ -37,9 +38,27 @@ export default function SwapDialog({ open, toggleOpen, address }) {
                                         <p className="text-xs text-gray-500 pb-0.5">
                                             TEMPORARY DEPOSIT ADDRESS
                                         </p>
-                                        <div class="min-h-12 text-left cursor-pointer space-x-2 border border-secondary-500 bg-secondary-700/70  flex text-sm rounded-md items-center w-full transform transition duration-200 px-2 py-1.5 hover:border-secondary-500 hover:bg-secondary-700 hover:shadow-xl">
-                                            <div class="flex flex-col">
-                                                <div class="text-gray-500">{address}</div>
+                                        <div className="min-h-12 text-left cursor-pointer space-x-2 border border-secondary-500 bg-secondary-700/70  flex text-sm rounded-md items-center w-full transform transition duration-200 px-2 py-1.5 hover:border-secondary-500 hover:bg-secondary-700 hover:shadow-xl">
+                                            <div className="flex flex-col">
+                                                {depositActions?.to_address ?
+                                                    <div className="text-white">{depositActions?.to_address}</div>
+                                                    :
+                                                    <div className="w-32 h-6 rounded-md animate-pulse bg-gray-500" />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2">
+                                        <p className="text-xs text-gray-500 pb-0.5">
+                                            AMOUNT
+                                        </p>
+                                        <div className="min-h-12 text-left cursor-pointer space-x-2 border border-secondary-500 bg-secondary-700/70  flex text-sm rounded-md items-center w-full transform transition duration-200 px-2 py-1.5 hover:border-secondary-500 hover:bg-secondary-700 hover:shadow-xl">
+                                            <div className="flex flex-col">
+                                                {depositActions?.amount ?
+                                                    <div className="text-white">{depositActions?.amount} ETH</div>
+                                                    :
+                                                    <div className="w-32 h-6 rounded-md animate-pulse bg-gray-500" />
+                                                }
                                             </div>
                                         </div>
                                     </div>

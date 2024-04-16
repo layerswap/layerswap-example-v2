@@ -1,10 +1,13 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import SwapDialog from './SwapDialog';
 
 function App() {
   const [showWidget, setShowWidget] = useState(false);
   const [amountData, setAmountData] = useState();
+  const [feeData, setFeeData] = useState();
+  const [swapData, setSwapData] = useState();
+  const [depositActions, setDepositActions] = useState();
   const [amountField, setAmountField] = useState('');
   const [addressField, setAddressField] = useState('');
   const [showSwapDialog, setShowSwapDialog] = useState(false);
@@ -20,11 +23,11 @@ function App() {
   const handleDeposit = async () => {
     setShowWidget(true);
     try {
-      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/limits?source_network=ARBITRUM_MAINNET&source_token=USDC.e&destination_network=ARBITRUM_MAINNET&destination_token=ETH&use_deposit_address=true&refuel=false', {
-      method: 'GET',
-          headers: {
+      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/limits?source_network=ETHEREUM_SEPOLIA&source_token=ETH&destination_network=ARBITRUM_SEPOLIA&destination_token=ETH&use_deposit_address=true&refuel=false', {
+        method: 'GET',
+        headers: {
           'Content-Type': 'application/json',
-          'X-LS-APIKEY': 'NHPls+1CSPTx8imeiQUlKm5DvoCJpm1kq7SLcVXVNIx9y69lm1ywl9DKTOWzqClwPsyECo3STBNMZteyLsfnRw'
+          'X-LS-APIKEY': 'sandbox'
         }
       });
 
@@ -34,14 +37,94 @@ function App() {
 
       const data = await response.json();
       setAmountData(data?.data)
-      console.log('Fetched data:', data);
+      console.log('Amount data:', data);
 
-      return data;
     } catch (error) {
       console.error('Error fetching data:', error.message);
       throw error;
     }
   }
+
+  const getFee = async () => {
+    try {
+      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/quote?source_network=ETHEREUM_SEPOLIA&source_token=ETH&destination_network=ARBITRUM_SEPOLIA&destination_token=ETH&use_deposit_address=true&amount=0.01&refuel=false', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-LS-APIKEY': 'sandbox'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
+      const data = await response.json();
+      setFeeData(data?.data?.quote)
+      console.log('Quote data:', data);
+
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      throw error;
+    }
+  }
+
+  const createSwap = async () => {
+    try {
+      const payload = {
+        destination_address: `${addressField}`,
+        source_address: `${addressField}`,
+        amount: `${Number(amountField)}`,
+        use_deposit_address: true,
+        source_network: "ETHEREUM_SEPOLIA",
+        source_token: "ETH",
+        destination_network: "ARBITRUM_SEPOLIA",
+        destination_token: "ETH",
+        refuel: false
+      };
+      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/swaps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-LS-APIKEY': 'sandbox'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const swapData = await response.json();
+
+      try {
+        const res = await fetch(`https://api-dev.layerswap.cloud/api/v2/swaps/${swapData?.data?.swap?.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-LS-APIKEY': 'sandbox'
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        const data = await res.json();
+        setDepositActions(data?.data?.deposit_actions[0]);
+        console.log('Deposit actions data:', data);
+
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        throw error;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      throw error;
+    }
+  }
+
   const maxAmount = amountData?.max_amount;
   const minAmount = amountData?.min_amount;
 
@@ -54,7 +137,7 @@ function App() {
       {!showWidget ?
         <button
           type="button"
-          onClick={() => handleDeposit()}
+          onClick={() => { handleDeposit(); getFee() }}
           className="rounded-md bg-[#ff0093] px-3.5 py-2.5 w-44 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Deposit
@@ -186,7 +269,7 @@ function App() {
                               <div className="gap-4 flex relative items-center outline-none w-full text-primary-text px-4 py-3">
                                 <div className="flex items-start justify-between w-full">
                                   <span className="md:font-semibold text-sm md:text-base text-primary-buttonTextColor leading-8 md:leading-8 flex-1"><span>You will receive</span></span>
-                                  <div className="flex items-end flex-col"><span className="text-sm md:text-base">{amountField.trim() && amountData?.fee_amount ? (amountField - amountData?.fee_amount).toFixed(5) : '-'}</span></div>
+                                  <div className="flex items-end flex-col"><span className="text-sm md:text-base">{amountField.trim() && feeData?.total_fee ? (amountField - feeData?.total_fee).toFixed(5) : '-'}</span></div>
                                 </div>
                               </div>
                             </div>
@@ -197,7 +280,7 @@ function App() {
                     <div className="text-primary-text text-base mt-3 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0  max-sm:z-30 max-sm:bg-secondary-900  max-sm:shadow-widget-footer  max-sm:p-4  max-sm:px-6  max-sm:w-full ">
                       <button
                         type="submit"
-                        onClick={() => setShowSwapDialog(true)}
+                        onClick={() => { setShowSwapDialog(true); createSwap() }}
                         disabled={!amountField.trim() || !addressField.trim()}
                         className="border border-primary disabled:border-primary-900 items-center space-x-1 disabled:text-opacity-40 disabled:bg-primary-900 disabled:cursor-not-allowed relative w-full flex justify-center font-semibold rounded-md transform hover:brightness-125 transition duration-200 ease-in-out bg-primary text-primary-actionButtonText py-3 px-2 md:px-3 plausible-event-name=Swap+initiated"
                       >
@@ -214,7 +297,7 @@ function App() {
         </div>
       ) : null}
       {showSwapDialog &&
-        <SwapDialog open={showSwapDialog} toggleOpen={setShowSwapDialog} address={addressField} />
+        <SwapDialog open={showSwapDialog} toggleOpen={setShowSwapDialog} address={addressField} depositActions={depositActions} />
       }
     </div>
   );
