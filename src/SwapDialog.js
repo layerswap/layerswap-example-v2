@@ -54,7 +54,7 @@ export default function SwapDialog({ open, toggleOpen, address, depositActions }
                                         <div className="min-h-12 text-left cursor-pointer space-x-2 border border-secondary-500 bg-secondary-700/70  flex text-sm rounded-md items-center w-full transform transition duration-200 px-2 py-1.5 hover:border-secondary-500 hover:bg-secondary-700 hover:shadow-xl">
                                             <div className="flex flex-col">
                                                 {depositActions?.amount ?
-                                                    <div className="text-white">{depositActions?.amount} ETH</div>
+                                                    <div className="text-white">{depositActions?.amount} USDC</div>
                                                     :
                                                     <div className="w-32 h-6 rounded-md animate-pulse bg-gray-500" />
                                                 }

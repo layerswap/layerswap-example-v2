@@ -23,11 +23,11 @@ function App() {
   const handleDeposit = async () => {
     setShowWidget(true);
     try {
-      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/limits?source_network=ETHEREUM_SEPOLIA&source_token=ETH&destination_network=ARBITRUM_SEPOLIA&destination_token=ETH&use_deposit_address=true&refuel=false', {
+      const response = await fetch('https://api.layerswap.io/api/v2/limits?source_network=ETHEREUM_MAINNET&source_token=USDC&destination_network=ARBITRUM_MAINNET&destination_token=USDC.e&use_deposit_address=true&refuel=false', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'X-LS-APIKEY': 'sandbox'
+          'X-LS-APIKEY': 'sK7bkuFZ/AYsU/f6D1+Qgrkm7qDF/ewRF3kWfMJ2jFFbk6ctKyVaD7SWL5mRyKI2kqAd7gVV2frQGphLZCnISg'
         }
       });
 
@@ -47,11 +47,11 @@ function App() {
 
   const getFee = async () => {
     try {
-      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/quote?source_network=ETHEREUM_SEPOLIA&source_token=ETH&destination_network=ARBITRUM_SEPOLIA&destination_token=ETH&use_deposit_address=true&amount=0.01&refuel=false', {
+      const response = await fetch('https://api.layerswap.io/api/v2/quote?source_network=ETHEREUM_MAINNET&source_token=USDC&destination_network=ARBITRUM_MAINNET&destination_token=USDC.e&use_deposit_address=true&amount=13&refuel=false', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'X-LS-APIKEY': 'sandbox'
+          'X-LS-APIKEY': 'sK7bkuFZ/AYsU/f6D1+Qgrkm7qDF/ewRF3kWfMJ2jFFbk6ctKyVaD7SWL5mRyKI2kqAd7gVV2frQGphLZCnISg'
         }
       });
 
@@ -76,17 +76,17 @@ function App() {
         source_address: `${addressField}`,
         amount: `${Number(amountField)}`,
         use_deposit_address: true,
-        source_network: "ETHEREUM_SEPOLIA",
-        source_token: "ETH",
-        destination_network: "ARBITRUM_SEPOLIA",
-        destination_token: "ETH",
+        source_network: "ETHEREUM_MAINNET",
+        source_token: "USDC",
+        destination_network: "ARBITRUM_MAINNET",
+        destination_token: "USDC.e",
         refuel: false
       };
-      const response = await fetch('https://api-dev.layerswap.cloud/api/v2/swaps', {
+      const response = await fetch(`https://api.layerswap.io/api/v2/swaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-LS-APIKEY': 'sandbox'
+          'X-LS-APIKEY': 'sK7bkuFZ/AYsU/f6D1+Qgrkm7qDF/ewRF3kWfMJ2jFFbk6ctKyVaD7SWL5mRyKI2kqAd7gVV2frQGphLZCnISg'
         },
         body: JSON.stringify(payload)
       });
@@ -94,11 +94,11 @@ function App() {
       const swapData = await response.json();
 
       try {
-        const res = await fetch(`https://api-dev.layerswap.cloud/api/v2/swaps/${swapData?.data?.swap?.id}`, {
+        const res = await fetch(`https://api.layerswap.io/api/v2/swaps/${swapData?.data?.swap?.id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'X-LS-APIKEY': 'sandbox'
+            'X-LS-APIKEY': 'sK7bkuFZ/AYsU/f6D1+Qgrkm7qDF/ewRF3kWfMJ2jFFbk6ctKyVaD7SWL5mRyKI2kqAd7gVV2frQGphLZCnISg'
           }
         });
 
@@ -129,6 +129,7 @@ function App() {
   const minAmount = amountData?.min_amount;
 
   const ethLogo = '/ethereum_mainnet.png'
+  const usdcLogo = '/usdc.png'
   const arbitrumLogo = '/arbitrum_mainnet.png'
 
   return (
@@ -168,8 +169,8 @@ function App() {
                               <div className="col-span-5 md:col-span-4">
                                 <div className="flex items-center relative">
                                   <button type="button" className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-secondary-500 font-semibold">
-                                    <img src={arbitrumLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
-                                    <span className="flex grow text-left items-center text-xs md:text-base"><span className="block font-medium text-primary-text-placeholder flex-auto items-center">Arbitrum one</span></span>
+                                    <img src={ethLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
+                                    <span className="flex grow text-left items-center text-xs md:text-base"><span className="block font-medium text-primary-text-placeholder flex-auto items-center">Ethereum</span></span>
                                   </button>
                                 </div>
                               </div>
@@ -177,8 +178,8 @@ function App() {
                                 <div className="relative">
                                   <div className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-secondary-500 font-semibold align-sub ">
                                     <div className="disabled:cursor-not-allowed relative grow flex items-center text-left w-full font-semibold">
-                                      <img src={ethLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
-                                      <span className="flex grow text-left items-center"><span className="block text-xs md:text-base font-medium text-primary-text-placeholder flex-auto items-center">UCDC.e</span></span></div>
+                                      <img src={usdcLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
+                                      <span className="flex grow text-left items-center"><span className="block text-xs md:text-base font-medium text-primary-text-placeholder flex-auto items-center">UCDC</span></span></div>
                                   </div>
                                 </div>
                               </div>
@@ -201,8 +202,8 @@ function App() {
                                 <div className="relative">
                                   <div className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-secondary-500 font-semibold align-sub ">
                                     <div className="disabled:cursor-not-allowed relative grow flex items-center text-left w-full font-semibold">
-                                      <img src={ethLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
-                                      <span className="flex grow text-left items-center"><span className="block text-xs md:text-base font-medium text-primary-text-placeholder flex-auto items-center">ETH</span></span></div>
+                                      <img src={usdcLogo} width={20} height={20} alt="From" className='rounded-md mr-1' />
+                                      <span className="flex grow text-left items-center"><span className="block text-xs md:text-base font-medium text-primary-text-placeholder flex-auto items-center">USDC.e</span></span></div>
                                   </div>
                                 </div>
                               </div>
